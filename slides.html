@@ -1,0 +1,337 @@
+<section>
+
+<h2>パイプライン演算子</h2>
+
+<p>wat-aro</p>
+
+</section>
+<section>
+<section>
+
+<h3>パイプライン演算子</h3>
+
+<p>こんな感じのやつ</p>
+
+<pre><code class="language-elm">  [1, 2, 3]
+  |&gt; List.map (\x -&gt; x * 2)
+  |&gt; List.foldl (+)
+</code></pre>
+
+</section>
+<section>
+
+<h4>パイプライン演算子</h4>
+
+<p><code>|&gt;</code> の前の値を関数に適用する</p>
+
+</section>
+<section>
+
+<h4>パイプライン演算子</h4>
+
+<ul>
+  <li>元は Isabela/ML あたりが発祥</li>
+  <li>F# が採用</li>
+  <li>OCaml が採用</li>
+  <li>Elixir が F# から採用</li>
+  <li>Ruby に入りそう</li>
+</ul>
+
+</section>
+</section>
+
+<section>
+<section>
+
+<h3>MLなどにおけるパイプライン演算子のつくりかた</h3>
+
+<p>以下を満たせば簡単につくれる</p>
+
+<ul>
+  <li>ユーザ定義演算子</li>
+  <li>デフォルトでカリー化</li>
+</ul>
+
+</section>
+<section>
+
+<h4>Haskell でのつくり方</h4>
+
+<p>第一引数を第二引数に適用するだけ</p>
+
+<pre><code class="language-haskell">(|&gt;) :: a -&gt; (a -&gt; b) -&gt; b
+(|&gt;) a f = f a
+</code></pre>
+
+</section>
+</section>
+
+<section>
+<section>
+
+<h3>カリー化と部分適用</h3>
+
+<p>以降の話に関わるのでここでおさらい</p>
+
+</section>
+<section>
+
+<h4>カリー化</h4>
+
+<p>複数の引数を受け取る関数を一引数の関数に変換する</p>
+
+<pre><code class="language-haskell">uncuffyFunction :: (a, b, c) -&gt; d
+uncuffyFunction (a, b, c) = somethingToDo a b c
+
+curriedFunction :: a -&gt; b -&gt; c -&gt; d
+curriedFunction a b c = somethingToDo a b c
+</code></pre>
+
+</section>
+<section>
+
+<h4>ES6</h4>
+
+<pre><code class="language-js">const uncurryFunction = (a, b, c) =&gt; somethigTodo(a, b, c)
+
+const curriedFunction = a =&gt; b =&gt; c =&gt; somethingTodo(a, b, c)
+</code></pre>
+
+<p>curriedFunctionは引数を一つとると残りの引数を <em>一つずつ取る関数</em> を返す<br>
+uncurryな関数をcurriedな関数に変換するのが</p>
+
+</section>
+<section>
+
+<h3>部分適用</h3>
+
+<p>複数の引数を取る関数で、一部にだけ引数を適用した状態の関数を返す。</p>
+
+<pre><code class="language-js">const partialApplied = somethigTodo(1, 2, ?)
+</code></pre>
+
+</section>
+<section>
+
+<h3>なぜカリー化と部分適用の話を？</h3>
+
+<p>Elixir などのデフォルトでカリー化されていない言語では関数のようにパイプライン演算子を定義できない<br>
+e.g.</p>
+<ul>
+  <li>Elixir, Clojure はマクロ</li>
+  <li>Ruby は言語組み込みの機構</li>
+</ul>
+
+</section>
+</section>
+
+<section>
+<section>
+
+<h3>Elixir のパイプライン演算子</h3>
+
+<p>ML系は関数の最後の引数に値を差し込む<br>
+Elixir は最初の引数を差し込む</p>
+
+</section>
+<section>
+
+<h4>Elixir の |&gt;</h4>
+
+<pre><code class="language-elixir">[1, [[2], 3]]
+  |&gt; List.flatten
+  |&gt; Enum.map(fn x -&gt; x * x end)
+  |&gt; Enum.reduce(0, fn(x, acc) -&gt; x + acc end)
+</code></pre>
+
+</section>
+<section>
+
+<h4>Elixir の |&gt;</h4>
+
+<p>カリー化されていないためASTを変換する必要がある</p>
+
+</section>
+</section>
+
+<section>
+<section>
+
+<h3>Ruby のパイプライン演算子</h3>
+
+<p>パイプラインといいつつただの優先度の低い <code>.</code></p>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子</h4>
+
+<pre><code class="language-ruby">(1..5).map {|x| x * 2 }
+
+1..5 |&gt; map {|x| x * 2 }
+</code></pre>
+
+<p>のように書ける</p>
+
+</section>
+</section>
+
+<section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<p><a href="https://twitter.com/hanachin_/status/1139406434846695430"><img src="https://i.gyazo.com/4ecb8454c6bfc9d8470cb6c118129d21.png" alt="Image from Gyazo"></a>()</p>
+
+<p>これの話をしたかった</p>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+</code></pre>
+
+<p><code>.:</code> は Ruby 2.7 で入る演算子。<br>
+Methodオブジェクトを取り出す。<br>
+MethodオブジェクトはほぼProcオブジェクトと同じふるまい。<br>
+詳しくはドキュメントを読んでください。</p>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+  |&gt;&gt;&gt; URI.:parse
+</code></pre>
+
+<p><code>URI.parse</code> でなく <code>URI.:parse</code> に注意。<br>
+とりだしたMethodオブジェクトを <code>|&gt;</code> と <code>&gt;&gt;</code> で合成する。<br>
+<code>&gt;&gt;</code> は Ruby2.6 で入った関数(Proc)合成演算子。<br>
+<code>URI.:parse</code> で <code>URI.parse</code> のMethodオブジェクトを取りだし、<br>
+<code>&gt;&gt;</code> によって合成している。<br>
+つまり</p>
+<pre><code class="language-ruby">URI.parse("https://api.github.com/repos/ruby/ruby ")
+</code></pre>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+  |&gt;&gt;&gt; URI.:parse
+  |&gt;&gt;&gt; Net::HTTP.:get
+</code></pre>
+
+<p><code>Net::HTTP.:get</code> で <code>Net:HTTP.get</code> のMethodオブジェクトを取り出す。</p>
+<pre><code class="language-ruby">uri = URI.parse("https://api.github.com/repos/ruby/ruby ")
+Net::HTTP.get(uri)
+</code></pre>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+  |&gt;&gt;&gt; URI.:parse
+  |&gt;&gt;&gt; Net::HTTP.:get
+  |&gt;&gt;&gt; JSON.:parse
+</code></pre>
+
+<p>ここでも <code>JSON.:parse</code> で <code>JSON.parse</code> でMethodオブジェクトを取り出す</p>
+
+<pre><code class="language-ruby">uri = URI.parse("https://api.github.com/repos/ruby/ruby ")
+response = Net::HTTP.get(uri)
+JSON.parse(response)
+</code></pre>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+  |&gt;&gt;&gt; URI.:parse
+  |&gt;&gt;&gt; Net::HTTP.:get
+  |&gt;&gt;&gt; JSON.:parse
+  |&gt; call
+</code></pre>
+
+<p>今まではMethodオブジェクトを合成しただけなので、ここでやっと評価され、値になる。</p>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+  |&gt;&gt;&gt; URI.:parse
+  |&gt;&gt;&gt; Net::HTTP.:get
+  |&gt;&gt;&gt; JSON.:parse
+  |&gt; call
+  |&gt; fetch("stargazers_count")
+</code></pre>
+
+<p><code>Hash#fetch</code> で値を取りだす</p>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<pre><code class="language-ruby">"https://api.github.com/repos/ruby/ruby ".:itself
+  |&gt;&gt;&gt; URI.:parse
+  |&gt;&gt;&gt; Net::HTTP.:get
+  |&gt;&gt;&gt; JSON.:parse
+  |&gt; call
+  |&gt; fetch("stargazers_count")
+  |&gt; then { puts @1 }
+</code></pre>
+
+<p>そして標準出力へ。<br>
+<code>@1</code> は Ruby2.7で入る予定。</p>
+
+<pre><code class="language-ruby">"hoge".then { puts @1 }
+"hoge".then {|s| puts s }
+</code></pre>
+
+</section>
+<section>
+
+<h4>Ruby のパイプライン演算子における応用</h4>
+
+<p>たーのしー</p>
+
+</section>
+</section>
+
+<section>
+<section>
+
+<h3>まとめ</h3>
+
+<p>パイプライン演算子の説明<br>
+Ruby2.7で入る予定のパイプライン演算子とその応用の紹介<br>
+関数合成をキメていこう</p>
+
+</section>
+<section>
+
+<h4>悲しみ</h4>
+
+<p><a href="https://twitter.com/hanachin_/status/1139406434846695430"><img src="https://i.gyazo.com/47e87c4f7f7ad60bb2f657b4ebbf431b.png" alt="Image from Gyazo"></a></p>
+
+</section>
+<section>
+
+<p>もっと詳しく知りたい人は</p>
+
+<p><a href="https://mametter.hatenablog.com/entry/2019/06/15/192311">パイプライン演算子の歴史 - まめめも</a><br>
+<a href="https://qiita.com/cedretaber/items/6a3831367439f64756ab">第一引数版パイプライン演算子 - Qiita @cedretaber</a></p>
+
+</section>
+</section>
